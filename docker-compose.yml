@@ -1,0 +1,9 @@
+version: '3'
+services:
+  image-storage:
+    build: .
+    ports:
+    -  "5005:5005"
+    environment:
+      USERS_API: "http://localhost:5001"
+

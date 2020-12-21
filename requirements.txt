@@ -1,0 +1,11 @@
+flask
+flask-restful
+passlib
+requests
+flask-cors
+gunicorn==20.0.0
+pybase64
+Pillow
+pymongo
+dnspython
+
