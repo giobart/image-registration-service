@@ -21,9 +21,9 @@ def store_image(employee_id):
         name = req['name'].strip()
         surname = req['surname'].strip()
         img=""
-        if req.has_key('img_features'):
+        if 'img_features' in req:
             img = req['img_features']
-        elif req.has_key('img_base64'):
+        elif 'img_base64' in req:
             img = extract_features(base64_to_pil(req['img_base64']))
         else:
             raise Exception("No img found")
@@ -59,7 +59,7 @@ def get_image(page=0, page_size=10):
 
     return resp, 200
 
-@store.route('/api/<id>', methods=['DELETE'])
+@store.route('/api/<int:id>', methods=['DELETE'])
 def delete_image(id):
     try:
 
