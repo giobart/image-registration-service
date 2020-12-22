@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from src.utility.db import *
+from src.utility.img_tools import *
 
 store = Blueprint('store', __name__)
 
@@ -10,8 +11,8 @@ store = Blueprint('store', __name__)
 '''
 
 
-@store.route('/api/store', methods=['POST'])
-def store_image():
+@store.route('/api/store/<int:employee_id>', methods=['POST'])
+def store_image(employee_id):
     req = request.json
 
     try:
@@ -19,9 +20,14 @@ def store_image():
         # getting username and password from input json
         name = req['name'].strip()
         surname = req['surname'].strip()
-        employer_id = req['employer_id'].strip()
-        img = req['img']
-        img_dict = {"name": name, "surname": surname, "_id": employer_id, "img": img}
+        img=""
+        if req.has_key('img_features'):
+            img = req['img_features']
+        elif req.has_key('img_base64'):
+            img = extract_features(base64_to_pil(req['img_base64']))
+        else:
+            raise Exception("No img found")
+        img_dict = {"name": name, "surname": surname, "_id": employee_id, "img": img}
         db_insert(img_dict)
 
     except Exception as e:
