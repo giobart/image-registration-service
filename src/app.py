@@ -1,7 +1,8 @@
 from flask import Flask
 from src.views import blueprints
 from flask_cors import CORS
-from src.utility.db import db_init
+from src.db.db_utility import db_init
+from src.tools.img_tools import model_init
 
 __all__ = ('create_app',)
 
@@ -21,6 +22,7 @@ def create_app(config=None, app_name='image-storage'):
         bp.app = app
 
     db_init()
+    model_init()
     return app
 
 

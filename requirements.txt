@@ -5,7 +5,13 @@ requests
 flask-cors
 gunicorn==20.0.0
 pybase64
-Pillow
+Pillow>=8.0.1
 pymongo
 dnspython
+gdown>=3.12.2
+pytorch-lightning>=1.0.8
+torch>=1.7.0
+facenet-pytorch
+torchvision>=0.8.1
+pickle-mixin
 

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from src.utility.db import *
-from src.utility.img_tools import *
+from src.db.db_utility import *
+from src.tools.img_tools import *
 
 store = Blueprint('store', __name__)
 
@@ -24,7 +24,8 @@ def store_image(employee_id):
         if 'img_features' in req:
             img = req['img_features']
         elif 'img_base64' in req:
-            img = extract_features(base64_to_pil(req['img_base64']))
+            base = base64_to_tensor(req['img_base64'])
+            img = extract_features(base)
         else:
             raise Exception("No img found")
         img_dict = {"name": name, "surname": surname, "_id": employee_id, "img": img}
