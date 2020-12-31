@@ -72,3 +72,22 @@ def delete_image(id):
         return str(e), 500
 
     return "ok", 200
+
+@store.route('/api/find_match',methods=['POST'])
+def find_match():
+    req = request.json
+
+    try:
+        # getting username and password from input json
+        img = req['image_base64']
+        img = base64_to_tensor(img)
+        result = find_img_correspondence_from_db(img)
+        if result is not None:
+            return jsonify(result), 200
+        else:
+            return "no matches found", 406
+
+    except Exception as e:
+        # log something here
+        print(e)
+        return str(e), 500

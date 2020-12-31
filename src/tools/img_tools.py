@@ -8,6 +8,8 @@ import gdown
 from src.model.CustomModel import *
 from torchvision import transforms
 from src.tools.model_tools import inference_one
+from src.db.db_utility import *
+from src.tools.model_tools import *
 
 model = None
 
@@ -63,8 +65,32 @@ def model_init():
 
 def extract_features(img):
     global model
-    it = inference_one(model, [(img, torch.zeros(1)),(img, torch.zeros(1))])
+    it = inference_one(model, [(img, torch.zeros(1)), (img, torch.zeros(1))])
     for x1, y1, logits in it:
         return logits.tolist()
 
 
+def compare_images(img1, img2):
+    features1 = torch.FloatTensor(img1)
+    features2 = torch.FloatTensor(img2)
+    distance = calc_distance(features1, features2).tolist()[0]
+    return distance
+
+
+def find_img_correspondence_from_db(img):
+    features = extract_features(img)
+    it = 1
+    batch = get_all_batch(50, it)
+    found = None
+    while len(batch) > 0:
+        for user in batch:
+            tmp_distance = compare_images(user['img'], features)
+            print(tmp_distance)
+            if tmp_distance < 1:
+                found = user
+                break
+        if found is not None:
+            return found
+        it += 1
+        batch = get_all_batch(50, it)
+    return found
