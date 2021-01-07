@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from src.db.db_utility import *
 from src.tools.img_tools import *
+import traceback
 
 store = Blueprint('store', __name__)
 
@@ -33,7 +34,7 @@ def store_image(employee_id):
 
     except Exception as e:
         # log something here
-        print(e)
+        traceback.print_exc()
         return str(e), 500
 
     return "ok", 200

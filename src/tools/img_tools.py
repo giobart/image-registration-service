@@ -5,11 +5,12 @@ from src.config import *
 from os import path
 import glob
 import gdown
-from src.model.CustomModel import *
+from src.model.CustomModelGroupLoss import *
 from torchvision import transforms
 from src.tools.model_tools import inference_one
 from src.db.db_utility import *
 from src.tools.model_tools import *
+from src.tools.evaluation_tool import *
 
 model = None
 
@@ -36,6 +37,7 @@ def model_download():
         if not os.path.exists(IMG_MODEL_FOLDER):
             os.makedirs(IMG_MODEL_FOLDER)
         gdown.download(IMG_MODEL_URL, IMG_MODEL_PATH, quiet=False)
+        gdown.download(INCEPTION_BN_URL, INCEPTION_BN_PATH, quiet=False)
 
 
 def model_init():
@@ -45,35 +47,73 @@ def model_init():
         model_download()
 
     if model is None:
-        model_hparams = {
-            "loss_fn": ContrastiveLoss(),
-            "lr": 0.001,
-            "weight_decay": 1e-5,
-            "filter_channels": 8,
-            "filter_size": 3,
-            "dropout": 0.02,
-            "n_hidden1": 4096,
-            "n_hidden2": 2048,
-            "n_hidden3": 128,
-            'loss_margin': 5,
-        }
-        model = Siamese(hparams=model_hparams)
-        model = model.load_from_checkpoint(checkpoint_path=IMG_MODEL_PATH)
 
-    return model
+        #cnn_model = CNN_MODEL_GROUP.MyCNN
+        cnn_model = CNN_MODEL_GROUP.BN_INCEPTION
+
+        if cnn_model == CNN_MODEL_GROUP.MyCNN:
+            model_hparams = {
+                "lr": 0.001,
+                "weight_decay": 1e-5,
+                "filter_channels": 4,
+                "filter_size": 3,
+                "dropout": 0.00,
+                "n_hidden1": 4096,
+                "n_hidden2": 2048,
+                'temperature': 10,
+                'num_labeled_points_class': 2,
+            }
+
+            scheduler_params = {
+                "step_size": 5,
+                "gamma": 0.5,
+            }
+        elif cnn_model == CNN_MODEL_GROUP.BN_INCEPTION:
+            model_hparams = {
+                "lr": 0.0001602403,
+                "weight_decay": 8.465428e-5,
+                'temperature': 12,
+                'num_labeled_points_class': 2
+            }
+
+            scheduler_params = {
+                "step_size": 10,
+                "gamma": 0.5,
+            }
+
+        # scheduler_params = None
+
+        num_classes = 10177
+        # num_classes = 1000
+
+        model = Siamese_Group(hparams=model_hparams,
+                              cnn_model=cnn_model,
+                              scheduler_params=scheduler_params,
+                              nb_classes=num_classes,
+                              finetune=False,
+                              weights_path=None,
+                              )
+
+        model_result = model.load_from_checkpoint(checkpoint_path=IMG_MODEL_PATH)
+
+    return model_result
 
 
 def extract_features(img):
     global model
-    it = inference_one(model, [(img, torch.zeros(1)), (img, torch.zeros(1))])
-    for x1, y1, logits in it:
-        return logits.tolist()
+    _,features = model(img.unsqueeze(0)) #inference_group(model,None, X=img.unsqueeze(0))
+    features = F.normalize(features)
+    #it = inference_one(model, [(img, torch.zeros(1)), (img, torch.zeros(1))])
+    #for x1, y1, logits in it:
+    #    return logits.tolist()
+    return features.tolist()[0]
 
 
 def compare_images(img1, img2):
     features1 = torch.FloatTensor(img1)
     features2 = torch.FloatTensor(img2)
-    distance = calc_distance(features1, features2).tolist()[0]
+    distance = calc_distance(features1, features2)
+    print(distance)
     return distance
 
 
@@ -86,8 +126,9 @@ def find_img_correspondence_from_db(img):
         for user in batch:
             tmp_distance = compare_images(user['img'], features)
             print(tmp_distance)
-            if tmp_distance < 1:
+            if tmp_distance < 0.2:
                 found = user
+                print("User: "+user["name"]+":"+str(user["_id"])+" logged in ")
                 break
         if found is not None:
             return found

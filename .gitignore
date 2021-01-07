@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 #checkpoint
-*model_checkpoint/
+*data/
 
 #idea
 idea/

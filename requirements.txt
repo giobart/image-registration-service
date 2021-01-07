@@ -14,4 +14,5 @@ torch>=1.7.0
 facenet-pytorch
 torchvision>=0.8.1
 pickle-mixin
+scikit-learn
 
