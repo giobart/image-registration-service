@@ -1,28 +1,25 @@
 import base64
 import io
-from PIL import Image, ImageOps
 from src.config import *
 from os import path
 import glob
 import gdown
 from src.model.CustomModelGroupLoss import *
 from torchvision import transforms
-from src.tools.model_tools import inference_one
 from src.db.db_utility import *
 from src.tools.model_tools import *
 from src.tools.evaluation_tool import *
-import numpy as np
 from src.tools.transform import *
 
 model = None
 
 
-def base64_to_tensor(img,crop_n_resize=True):
+def base64_to_tensor(img, crop_n_resize=True):
     model = model_init()
     msg = base64.b64decode(img)
     buf = io.BytesIO(msg)
     img = Image.open(buf).convert('RGB')
-    img = crop_and_resize(img,model.input_size)
+    img = crop_and_resize(img, model.input_size)
     img.save("last_image.jpg")
     transform = transforms.Compose([
         transforms.ToTensor(),
@@ -30,7 +27,8 @@ def base64_to_tensor(img,crop_n_resize=True):
     ])
     return transform(img)
 
-def crop_and_resize(img,input_size):
+
+def crop_and_resize(img, input_size):
     img = image_deep_alignment(img)
     old_size = img.size  # old_size[0] is in (width, height) format
     ratio = float(input_size) / max(old_size)
@@ -41,6 +39,7 @@ def crop_and_resize(img,input_size):
                        (input_size - new_size[1]) // 2))
     img = new_im
     return image_deep_alignment(img, transform_kind="r")
+
 
 def is_model_downloaded():
     if IMG_MODEL_PATH in glob.glob(path.join(IMG_MODEL_FOLDER, "*")):
@@ -115,7 +114,8 @@ def model_init():
 
 def extract_features(img):
     model = model_init()
-    fc7,_ = model(img.unsqueeze(0))
+    model.eval()
+    _, fc7 = model(img.unsqueeze(0))
 
     # features = F.normalize(features)
     # it = inference_one(model, [(img, torch.zeros(1)), (img, torch.zeros(1))])
@@ -124,25 +124,18 @@ def extract_features(img):
     return fc7.tolist()
 
 
-def compare_images(img1, img2):
-    model = model_init()
-    diff = np.subtract(img1, img2)
-    dist = np.sum(np.square(diff), 1)
-    return dist/100
-
-
 def find_img_correspondence_from_db(img):
-    features = extract_features(img)
+    features = torch.FloatTensor(extract_features(img))
     it = 1
     batch = get_all_batch(50, it)
     found = None
-    min=1
+    min = 1
     while len(batch) > 0:
         for user in batch:
-            tmp_distance = compare_images(user['img'], features)
+            tmp_distance = calc_distance(torch.FloatTensor(user['img']), features)
             print(tmp_distance)
-            if tmp_distance < min :
-                min=tmp_distance
+            if tmp_distance < min:
+                min = tmp_distance
                 found = user
         if found is not None:
             print("User: " + found["name"] + ":" + str(found["_id"]) + " logged in ")

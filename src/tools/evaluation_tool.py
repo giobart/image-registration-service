@@ -36,7 +36,6 @@ def inference_group(model, fc7, batch=None, X=None):
         _, fc7 = model(X)
 
     # normalize the features in the unit ball
-    print("fc7",fc7)
     fc7 = F.normalize(fc7, p=2, dim=1)
 
 

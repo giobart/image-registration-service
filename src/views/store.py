@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify
-from src.db.db_utility import *
 from src.tools.img_tools import *
 import traceback
 
@@ -26,6 +25,7 @@ def store_image(employee_id):
             img = req['img_features']
         elif 'img_base64' in req:
             base = base64_to_tensor(req['img_base64'])
+            #img={'cpickle': Binary(pickle.dumps(base.numpy(), protocol=2))}
             img = extract_features(base)
         else:
             raise Exception("No img found")
@@ -56,6 +56,7 @@ def get_image(page=0, page_size=10):
 
     except Exception as e:
         # log something here
+        traceback.print_exc()
         print(e)
         return str(e), 500
 

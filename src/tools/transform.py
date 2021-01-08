@@ -79,9 +79,9 @@ def image_deep_alignment(img, transform_kind="crop"):
 
         if transform_kind == FaceAlignTransform.ROTATION:
             rotation = get_rotation_matrix(left_eye, right_eye)
-            translation = get_translation_matrix(left_eye, w, h)
-            translated = cv2.warpAffine(img, translation, img.shape[:2], flags=cv2.INTER_CUBIC)
-            transformed = cv2.warpAffine(translated, rotation, img.shape[:2], flags=cv2.INTER_CUBIC)
+            #translation = get_translation_matrix(left_eye, w, h)
+            #translated = cv2.warpAffine(img, translation, img.shape[:2], flags=cv2.INTER_CUBIC)
+            transformed = cv2.warpAffine(img, rotation, img.shape[:2], flags=cv2.INTER_CUBIC)
         elif transform_kind == FaceAlignTransform.AFFINE:
             matrix = get_affine_transform_matrix(
                 left_eye, right_eye, nose,
@@ -89,16 +89,16 @@ def image_deep_alignment(img, transform_kind="crop"):
             )
             transformed = cv2.warpAffine(img, matrix, img.shape[:2], flags=cv2.INTER_CUBIC)
         elif transform_kind=="crop":
-            y=y-int((y2-y)/2)
+            y=y-int((y2-y)*1/3)
             if y<0:
                 y=0
-            y2=y2+int((y2-y)/2)
+            y2=y2+int((y2-y)*1/3)
             if y2>h:
                 y2=h-1
-            x = x - int((x2 - x) / 2)
+            x = x - int((x2 - x)*1 / 3)
             if x < 0:
                 x = 0
-            x2 = x2 + int((x2 - x) / 2)
+            x2 = x2 + int((x2 - x)*1 / 3)
             if x2 > w:
                 x2 = w-1
             return Image.fromarray(cv2.cvtColor(img[y:y2,x:x2,:], cv2.COLOR_BGR2RGB))
