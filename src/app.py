@@ -10,7 +10,7 @@ def create_app(config=None, app_name='image-storage'):
     '''
     Initializes the application and its utilities.
     '''
-
+    global current_model
     app = Flask(app_name)
     CORS(app)
 
@@ -22,7 +22,6 @@ def create_app(config=None, app_name='image-storage'):
         bp.app = app
 
     db_init()
-    model_init()
     return app
 
 

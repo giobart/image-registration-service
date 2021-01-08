@@ -11,11 +11,13 @@ from src.tools.model_tools import inference_one
 from src.db.db_utility import *
 from src.tools.model_tools import *
 from src.tools.evaluation_tool import *
+import numpy as np
 
 model = None
 
 
 def base64_to_tensor(img):
+    model = model_init()
     msg = base64.b64decode(img)
     buf = io.BytesIO(msg)
     img = Image.open(buf).convert('RGB')
@@ -48,9 +50,10 @@ def model_init():
 
     if model is None:
 
-        #cnn_model = CNN_MODEL_GROUP.MyCNN
+        # cnn_model = CNN_MODEL_GROUP.MyCNN
         cnn_model = CNN_MODEL_GROUP.BN_INCEPTION
-
+        model_hparams = {}
+        scheduler_params = {}
         if cnn_model == CNN_MODEL_GROUP.MyCNN:
             model_hparams = {
                 "lr": 0.001,
@@ -81,40 +84,37 @@ def model_init():
                 "gamma": 0.5,
             }
 
-        # scheduler_params = None
-
         num_classes = 10177
         # num_classes = 1000
 
-        model = Siamese_Group(hparams=model_hparams,
-                              cnn_model=cnn_model,
-                              scheduler_params=scheduler_params,
-                              nb_classes=num_classes,
-                              finetune=False,
-                              weights_path=None,
-                              )
+        model = Siamese_Group.load_from_checkpoint(checkpoint_path=IMG_MODEL_PATH,
+                                                   hparams=model_hparams,
+                                                   cnn_model=cnn_model,
+                                                   scheduler_params=scheduler_params,
+                                                   nb_classes=num_classes,
+                                                   finetune=False,
+                                                   weights_path=None
+                                                   )
 
-        model_result = model.load_from_checkpoint(checkpoint_path=IMG_MODEL_PATH)
-
-    return model_result
+    return model
 
 
 def extract_features(img):
-    global model
-    _,features = model(img.unsqueeze(0)) #inference_group(model,None, X=img.unsqueeze(0))
-    features = F.normalize(features)
-    #it = inference_one(model, [(img, torch.zeros(1)), (img, torch.zeros(1))])
-    #for x1, y1, logits in it:
+    model = model_init()
+    _,fc7 = model(img.unsqueeze(0))
+
+    # features = F.normalize(features)
+    # it = inference_one(model, [(img, torch.zeros(1)), (img, torch.zeros(1))])
+    # for x1, y1, logits in it:
     #    return logits.tolist()
-    return features.tolist()[0]
+    return fc7.tolist()
 
 
 def compare_images(img1, img2):
-    features1 = torch.FloatTensor(img1)
-    features2 = torch.FloatTensor(img2)
-    distance = calc_distance(features1, features2)
-    print(distance)
-    return distance
+    model = model_init()
+    diff = np.subtract(img1, img2)
+    dist = np.sum(np.square(diff), 1)
+    return dist
 
 
 def find_img_correspondence_from_db(img):
@@ -122,15 +122,16 @@ def find_img_correspondence_from_db(img):
     it = 1
     batch = get_all_batch(50, it)
     found = None
+    min=6
     while len(batch) > 0:
         for user in batch:
             tmp_distance = compare_images(user['img'], features)
             print(tmp_distance)
-            if tmp_distance < 0.2:
+            if tmp_distance < min :
+                min=tmp_distance
                 found = user
-                print("User: "+user["name"]+":"+str(user["_id"])+" logged in ")
-                break
         if found is not None:
+            print("User: " + found["name"] + ":" + str(found["_id"]) + " logged in ")
             return found
         it += 1
         batch = get_all_batch(50, it)

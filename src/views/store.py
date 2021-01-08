@@ -90,5 +90,6 @@ def find_match():
 
     except Exception as e:
         # log something here
+        traceback.print_exc()
         print(e)
         return str(e), 500

@@ -137,7 +137,7 @@ def assign_by_euclidian_at_k_indices(X, k):
     return indices, distances
 
 def calc_distance(im1, im2):
-    distance = sklearn.metrics.pairwise.pairwise_distances(torch.squeeze(torch.stack([im1,im2])))
+    distance = sklearn.metrics.pairwise.pairwise_distances(torch.squeeze(torch.cat([im1,im2])))
     return distance[1,0]
 
 # def assign_by_euclidian_at_k(X, T, k):
