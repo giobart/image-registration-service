@@ -115,7 +115,7 @@ def model_init():
 
 def extract_features(img):
     model = model_init()
-    _,fc7 = model(img.unsqueeze(0))
+    fc7,_ = model(img.unsqueeze(0))
 
     # features = F.normalize(features)
     # it = inference_one(model, [(img, torch.zeros(1)), (img, torch.zeros(1))])
@@ -128,7 +128,7 @@ def compare_images(img1, img2):
     model = model_init()
     diff = np.subtract(img1, img2)
     dist = np.sum(np.square(diff), 1)
-    return dist
+    return dist/100
 
 
 def find_img_correspondence_from_db(img):
@@ -136,7 +136,7 @@ def find_img_correspondence_from_db(img):
     it = 1
     batch = get_all_batch(50, it)
     found = None
-    min=6.5
+    min=1
     while len(batch) > 0:
         for user in batch:
             tmp_distance = compare_images(user['img'], features)
