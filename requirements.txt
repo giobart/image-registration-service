@@ -15,4 +15,5 @@ facenet-pytorch
 torchvision>=0.8.1
 pickle-mixin
 scikit-learn
+opencv-python
 

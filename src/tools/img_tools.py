@@ -1,6 +1,6 @@
 import base64
 import io
-from PIL import Image
+from PIL import Image, ImageOps
 from src.config import *
 from os import path
 import glob
@@ -12,21 +12,35 @@ from src.db.db_utility import *
 from src.tools.model_tools import *
 from src.tools.evaluation_tool import *
 import numpy as np
+from src.tools.transform import *
 
 model = None
 
 
-def base64_to_tensor(img):
+def base64_to_tensor(img,crop_n_resize=True):
     model = model_init()
     msg = base64.b64decode(img)
     buf = io.BytesIO(msg)
     img = Image.open(buf).convert('RGB')
+    img = crop_and_resize(img,model.input_size)
+    img.save("last_image.jpg")
     transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Resize((model.input_size, model.input_size))
     ])
     return transform(img)
 
+def crop_and_resize(img,input_size):
+    img = image_deep_alignment(img)
+    old_size = img.size  # old_size[0] is in (width, height) format
+    ratio = float(input_size) / max(old_size)
+    new_size = tuple([int(x * ratio) for x in old_size])
+    img = img.resize(new_size, Image.ANTIALIAS)
+    new_im = Image.new("RGB", (input_size, input_size))
+    new_im.paste(img, ((input_size - new_size[0]) // 2,
+                       (input_size - new_size[1]) // 2))
+    img = new_im
+    return image_deep_alignment(img, transform_kind="r")
 
 def is_model_downloaded():
     if IMG_MODEL_PATH in glob.glob(path.join(IMG_MODEL_FOLDER, "*")):
@@ -122,7 +136,7 @@ def find_img_correspondence_from_db(img):
     it = 1
     batch = get_all_batch(50, it)
     found = None
-    min=6
+    min=6.5
     while len(batch) > 0:
         for user in batch:
             tmp_distance = compare_images(user['img'], features)
