@@ -20,12 +20,12 @@ def store_image(employee_id):
         # getting username and password from input json
         name = req['name'].strip()
         surname = req['surname'].strip()
-        img=""
+        img = ""
         if 'img_features' in req:
             img = req['img_features']
         elif 'img_base64' in req:
             base = base64_to_tensor(req['img_base64'])
-            #img={'cpickle': Binary(pickle.dumps(base.numpy(), protocol=2))}
+            # img={'cpickle': Binary(pickle.dumps(base.numpy(), protocol=2))}
             img = extract_features(base)
         else:
             raise Exception("No img found")
@@ -44,10 +44,10 @@ def store_image(employee_id):
 def get_image(page=0, page_size=10):
     resp = ""
 
-    if page <=0:
-        return "invalid_page",500
-    if page_size <=0:
-        return "invalid_page_size",500
+    if page <= 0:
+        return "invalid_page", 500
+    if page_size <= 0:
+        return "invalid_page_size", 500
 
     try:
 
@@ -62,6 +62,7 @@ def get_image(page=0, page_size=10):
 
     return resp, 200
 
+
 @store.route('/api/<int:id>', methods=['DELETE'])
 def delete_image(id):
     try:
@@ -75,14 +76,21 @@ def delete_image(id):
 
     return "ok", 200
 
-@store.route('/api/find_match',methods=['POST'])
+
+@store.route('/api/find_match', methods=['POST'])
 def find_match():
     req = request.json
 
     try:
         # getting username and password from input json
         img = req['image_base64']
-        img = base64_to_tensor(img)
+        fraud_detection = False
+        if 'fraud_detection' in req:
+            fraud_detection = bool(req['fraud_detection'])
+        img_crop = True
+        if 'img_crop' in req:
+            img_crop = bool(req['img_crop'])
+        img = base64_to_tensor(img, crop_n_resize=img_crop)
         result = find_img_correspondence_from_db(img)
         if result is not None:
             return jsonify(result), 200

@@ -19,7 +19,8 @@ def base64_to_tensor(img, crop_n_resize=True):
     msg = base64.b64decode(img)
     buf = io.BytesIO(msg)
     img = Image.open(buf).convert('RGB')
-    img = crop_and_resize(img, model.input_size)
+    if crop_n_resize:
+        img = crop_and_resize(img, model.input_size)
     img.save("last_image.jpg")
     transform = transforms.Compose([
         transforms.ToTensor(),
