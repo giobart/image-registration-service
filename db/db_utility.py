@@ -9,6 +9,7 @@ def db_init():
     global client
     global collection
     if client is None:
+        print("login to: ", DB_ADDRESS)
         client = pymongo.MongoClient(DB_ADDRESS)
         collection = client.whosthatpokemon.users
 
