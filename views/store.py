@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from src.tools.img_tools import *
+from tools.img_tools import *
 import traceback
 
 store = Blueprint('store', __name__)

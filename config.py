@@ -1,4 +1,4 @@
-from src.credentials import username, password
+from credentials import username, password
 import os
 
 # -*- coding: utf-8 -*-

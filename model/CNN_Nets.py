@@ -1,6 +1,6 @@
-from src.model.GeneralLayers import *
+from model.GeneralLayers import *
 from facenet_pytorch import InceptionResnetV1
-from src.model.inception_bn import bn_inception
+from model.inception_bn import bn_inception
 import torch
 
 class myCNN(nn.Module):

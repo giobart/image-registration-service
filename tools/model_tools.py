@@ -3,7 +3,7 @@ import numpy as np
 from torch import nn
 import sklearn
 import sklearn.metrics
-from src.tools import evaluation_tool
+from tools import evaluation_tool
 import torch.nn.functional as F
 
 def inference(model, images=None, loader=None):

@@ -1,10 +1,7 @@
-import torch.nn as nn
 import torch.nn.functional as F
-from src import evaluation
+import evaluation
 import torch
 import logging
-import sys
-import numpy as np
 
 
 def predict_batchwise(model, dataloader=None, fc7=None, batch=None, images=None):

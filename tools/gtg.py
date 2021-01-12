@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch
-from src.tools import dynamics
+from tools import dynamics
 import torch.nn.functional as F
 
 

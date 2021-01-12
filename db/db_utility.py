@@ -1,5 +1,5 @@
 import pymongo
-from src.config import DB_ADDRESS
+from config import DB_ADDRESS
 
 client = None
 collection = None

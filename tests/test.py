@@ -1,8 +1,6 @@
-from src.tools.model_tools import *
-from src.tools.img_tools import *
+from tools.img_tools import *
 import pytest
 import torch
-from src.tests.base64_imgs import *
 
 model = None
 
@@ -43,7 +41,7 @@ def test_different_person_img(model_initialize):
     global model
     img1 = base64_to_tensor(base64_person_1)
     img2 = base64_to_tensor(base64_person_2)
-    emb, _ = evaluation_tool.predict_batchwise(model, batch=(torch.stack([img1,img2]),torch.stack([img1,img2])))
+    emb, _ = evaluation_tool.predict_batchwise(model, batch=(torch.stack([img1, img2]), torch.stack([img1, img2])))
     features2 = torch.FloatTensor(extract_features(img1))
     print("emb: ",emb)
     print("features: ",features2)

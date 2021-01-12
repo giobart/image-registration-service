@@ -2,15 +2,14 @@ import torch
 from torch import nn
 import pytorch_lightning as pl
 import torch.nn.functional as F
-from src.tools.model_tools import ContrastiveLoss, get_labeled_and_unlabeled_points
-from src.model.GeneralLayers import FCN_layer
-from src.model.CNN_Nets import myCNN, BnInception
+from tools.model_tools import get_labeled_and_unlabeled_points
+from model.GeneralLayers import FCN_layer
+from model.CNN_Nets import myCNN, BnInception
 from enum import Enum
-from pytorch_lightning.metrics.functional import accuracy
 from torch.optim.lr_scheduler import StepLR
-from src.tools import gtg
+from tools import gtg, evaluation_tool
 import sys
-from src.tools import evaluation_tool
+
 
 class CNN_MODEL_GROUP(Enum):
     MyCNN = 1

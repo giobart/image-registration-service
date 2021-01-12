@@ -1,8 +1,7 @@
 from flask import Flask
-from src.views import blueprints
+from views import blueprints
 from flask_cors import CORS
-from src.db.db_utility import db_init
-from src.tools.img_tools import model_init
+from db.db_utility import db_init
 
 __all__ = ('create_app',)
 

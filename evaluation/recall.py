@@ -1,7 +1,7 @@
 import torch
 import numpy as np
-import sklearn.metrics.pairwise
-from src.tools import model_tools
+from tools import model_tools
+
 
 def assign_by_euclidian_at_k(X, T, k):
     """

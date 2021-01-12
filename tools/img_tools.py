@@ -1,15 +1,15 @@
 import base64
 import io
-from src.config import *
+from config import *
 from os import path
 import glob
 import gdown
-from src.model.CustomModelGroupLoss import *
+from model.CustomModelGroupLoss import *
 from torchvision import transforms
-from src.db.db_utility import *
-from src.tools.model_tools import *
-from src.tools.evaluation_tool import *
-from src.tools.transform import *
+from db.db_utility import *
+from tools.model_tools import *
+from tools.evaluation_tool import *
+from tools.transform import *
 
 model = None
 
