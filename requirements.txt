@@ -6,7 +6,7 @@ flask-cors
 gunicorn==20.0.0
 pybase64
 Pillow>=8.0.1
-pymongo
+pymongo==3.10
 dnspython
 gdown>=3.12.2
 pytorch-lightning>=1.0.8
