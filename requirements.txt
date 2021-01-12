@@ -15,5 +15,5 @@ facenet-pytorch
 torchvision>=0.8.1
 pickle-mixin
 scikit-learn
-opencv-python==4.1.2.30
+opencv-python-headless
 
