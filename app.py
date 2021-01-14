@@ -2,6 +2,7 @@ from flask import Flask
 from views import blueprints
 from flask_cors import CORS
 from db.db_utility import db_init
+from tools.img_tools import *
 
 __all__ = ('create_app',)
 
@@ -20,6 +21,7 @@ def create_app(config=None, app_name='image-storage'):
         app.register_blueprint(bp)
         bp.app = app
 
+    model_init()
     db_init()
     return app
 
