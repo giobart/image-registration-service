@@ -10,3 +10,4 @@ IMG_MODEL_PATH = os.path.join(IMG_MODEL_FOLDER, "model.ckpt")
 IMG_MODEL_URL = "https://drive.google.com/uc?id=18RzCDMTQO-6pry9I1K2wJUyFZEIBG4DQ"
 INCEPTION_BN_URL = "https://drive.google.com/uc?id=1iSizx_u8lId4v92yFJVmCyxMLZdvlxTe"
 INCEPTION_BN_PATH = os.path.join(IMG_MODEL_FOLDER, "bn_inception_weights_pt04.pt")
+LIVENESS_SERVICE_URL = os.getenv('LIVENESS_SERVICE_URL', 'http://0.0.0.0:5007')

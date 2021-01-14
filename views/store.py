@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from tools.img_tools import *
 import traceback
+import threading
+from interface.liveness_detection import *
 
 store = Blueprint('store', __name__)
 
@@ -90,6 +92,14 @@ def find_match():
         img_crop = True
         if 'img_crop' in req:
             img_crop = bool(req['img_crop'])
+        if 'liveness' in req:
+            frames = req['frames']
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            result = loop.run_until_complete(liveness_detection_check(frames))
+            if result is False:
+                print("Liveness check failed")
+                return "Liveness check failed", 406
         img = base64_to_tensor(img, crop_n_resize=img_crop)
         result = find_img_correspondence_from_db(img)
         if result is not None:
