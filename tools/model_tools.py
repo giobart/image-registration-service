@@ -6,6 +6,7 @@ import sklearn.metrics
 from tools import evaluation_tool
 import torch.nn.functional as F
 
+
 def inference(model, images=None, loader=None):
     if images is None:
         with torch.no_grad():
@@ -65,7 +66,7 @@ def inference_one(model, images=None, loader=None):
 
                 model.eval()
                 model.freeze()
-                logits,_ = model.forward_one(x1).squeeze()
+                logits, _ = model.forward_one(x1).squeeze()
                 model.to('cpu')
                 yield x1.to('cpu'), label, logits.to('cpu')
     else:
@@ -79,7 +80,7 @@ def inference_one(model, images=None, loader=None):
 
             model.eval()
             model.freeze()
-            _,logits = model.forward_one(x1)
+            _, logits = model.forward_one(x1)
             model.to('cpu')
             yield x1.to('cpu'), label, logits.to('cpu')
 
@@ -113,6 +114,7 @@ def get_similar_ind(k, model=None, emb=None, batch=None, images=None):
 
     return indices, distances
 
+
 def get_labeled_and_unlabeled_points(labels, num_points_per_class, num_classes=100):
     labs, L, U = [], [], []
     labs_buffer = np.zeros(num_classes)
@@ -126,6 +128,7 @@ def get_labeled_and_unlabeled_points(labels, num_points_per_class, num_classes=1
             labs_buffer[labels[i]] += 1
     return labs, L, U
 
+
 def assign_by_euclidian_at_k_indices(X, k):
     """
         X : [nb_samples x nb_features], e.g. 100 x 64 (embeddings)
@@ -136,9 +139,22 @@ def assign_by_euclidian_at_k_indices(X, k):
     indices = np.argsort(distances, axis=1)[:, 1: k + 1]
     return indices, distances
 
+
 def calc_distance(im1, im2):
-    distance = sklearn.metrics.pairwise.pairwise_distances(torch.squeeze(F.normalize(torch.cat([im1,im2]))))
-    return distance[1,0]
+    distance = sklearn.metrics.pairwise.pairwise_distances(torch.squeeze(F.normalize(torch.cat([im1, im2]))))
+    return distance[1, 0]
+
+
+def find_closest_match(current_image_tensor, user_tensor, match_treshold=1):
+    distance = sklearn.metrics.pairwise.pairwise_distances(torch.squeeze(F.normalize(torch.cat([current_image_tensor, user_tensor]))))
+    treshold = match_treshold
+    index_j = None
+    for j, elem in enumerate(distance[0]):
+        # avoid diagonal elements, they are always 0
+        if elem < treshold and j is not 0:
+            index_j = j-1
+            treshold = elem
+    return index_j, treshold
 
 # def assign_by_euclidian_at_k(X, T, k):
 #     """
