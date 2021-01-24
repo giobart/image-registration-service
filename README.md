@@ -144,5 +144,10 @@ In order to deploy this service on Openshift the following config files must be 
     ```
 - Inside the routing configuration YAML file update the route target port for the 8080-tcp spec
     ```
-    targetPort: 5006
+    spec:
+      ports:
+        - name: 8080-tcp
+          protocol: TCP
+          port: 8080
+          targetPort: 5005
     ```
