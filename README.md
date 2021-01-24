@@ -142,7 +142,7 @@ In order to deploy this service on Openshift the following config files must be 
             - name: LIVENESS_SERVICE_URL
               value: 'http://<cluster address of the deployed liveness detection service>:8080' 
     ```
-- Inside the routing configuration YAML file update the route target port for the 8080-tcp spec
+- Inside the service configuration YAML file update the route target port for the 8080-tcp spec
     ```
     spec:
       ports:
