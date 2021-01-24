@@ -1,7 +1,7 @@
 [![Build Status](https://www.travis-ci.com/giobart/image-registration-service.svg?token=77HjjGKzi8yfh9qk7axg&branch=main)](https://www.travis-ci.com/giobart/image-registration-service.svg?token=77HjjGKzi8yfh9qk7axg&branch=main)
 
 # Image service for who's that pokmeon project
-Service used by the **Who's that pokemon** project.
+Service used by the [who's that pokemon](https://github.com/giobart/whos_that_pokemon/tree/develop) project.
 
 This service is used for all the operations related to a facial Image.
 
