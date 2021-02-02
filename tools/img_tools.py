@@ -133,7 +133,7 @@ def find_img_correspondence_from_db(img):
         img_batch = []
         for user in batch:
             img_batch.append(torch.FloatTensor(user['img'][0]))
-        user_index, distance = find_closest_match(features, torch.stack(img_batch), match_treshold=0.8)
+        user_index, distance = find_closest_match(features, torch.stack(img_batch), match_treshold=LOGIN_MATCH_THRESHOLD)
         print(distance)
         if user_index is not None:
             print("User: " + batch[user_index]["name"] + ":" + str(batch[user_index]["_id"]) + " logged in ")
