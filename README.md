@@ -58,6 +58,16 @@ Before running the image registration service you have to setup the following en
     export MONGO_DB_USERNAME='<MONGO DB PASSWORD>'
     ```
 
+## Tuning the login accuracy threshold
+Is possible to tune the login accuracy threshold with a value ⍺ ∈ [0,1], by default ⍺ = 0.8
+edit the threshold with the following environment variable.
+
+```
+    export LOGIN_MATCH_THRESHOLD=<value>
+```
+
+This value also depends on the quality of the acquisition mean, with an HD input is possible to obtain matches with values lower than 0.7
+
 # API Exposed
 
 This service exposes the following HTTP methods:
